@@ -1,19 +1,89 @@
-# Healthfirst 📞 Call Center Quick Guide
-
+**Healthfirst 📞 Call Center Quick-Guide — 2025 “Sound Human” Refresh**
 
 ---
-## 1 · Call Flow & Agent Etiquette
-| Step | What to Say / Do | Key Tone |
-|------|-----------------|-----------|
-| **Greeting** | "Hey, thanks for calling Healthfirst! How can I help you today?" | Warm & upbeat |
-| **Verify & Listen** | Collect caller name, zip, current doctor/hospital, and reason for call – *let them finish speaking* | Patient, attentive |
-| **Acknowledge** | "Absolutely, I can help with that." | Empathetic |
-| **Guide** | Walk through next steps (quote, network match, enrollment) | Confident, clear |
-| **Close** | "Is there anything else I can help you with today?" | Supportive |
 
-**Voice**  → Friendly expert · Use plain English · Pause briefly after complex info · Keep pace moderate.
+### 1 · Core Principles (Post on every desk)
 
-**DON'T** ✖ Over‑promise · Use jargon without explaining.
+| Guideline                    | Why it Matters                    | How to Do It in 5 Words         |
+| ---------------------------- | --------------------------------- | ------------------------------- |
+| **Lead with warmth**         | Members feel heard, not queued    | “Hi **Name**, glad you called!” |
+| **Answer headline first**    | Cuts the wait‐time frustration    | “Yes, that’s covered.”          |
+| **Speak like a neighbor**    | Replaces jargon with plain talk   | Swap “copayment” → “copay”      |
+| **Keep it under 30 seconds** | Prevents rambling, boosts clarity | Use the **H-K-O** formula\*     |
+| **Check understanding**      | Confirms accuracy, builds trust   | “Does that make sense?”         |
+| **Finish with help offer**   | Shows partnership, ends cleanly   | “Anything else I can do?”       |
+
+\* **H-K-O Formula**: **H**eadline answer → **K**ey numbers → **O**ffer detail if needed.
+
+---
+
+### 2 · Natural Call Flow & Sample Lines
+
+| Step                   | What to Say                                                                                                                     | Tips for a Human Touch                         |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| **Greet**              | “Hey **Name**, thanks for calling Healthfirst! How can I help today?”                                                           | Smile — it changes tone.                       |
+| **Verify & Listen**    | “May I get your zip code and the doctor you see most?” (Then **mute your keyboard** and let them finish.)                       | Nod / “mm-hmm” sounds keep it conversational.  |
+| **Acknowledge**        | “Absolutely, I can take care of that.”                                                                                          | Match their wording to show you heard them.    |
+| **Answer Using H-K-O** | “Yes, physical therapy is covered. You pay a **\$20 copay** per visit, no deductible. Want me to email the full benefit sheet?” | Aim ≤ 150 wpm; pause 1 beat after each number. |
+| **Guide Next Step**    | “I can check in-network clinics near you—does that help?”                                                                       | Give **one** option at a time.                 |
+| **Close**              | “Is there anything else I can help with before we hang up?”                                                                     | End upbeat: “Enjoy the rest of your day!”      |
+
+---
+
+### 3 · Clarity Cheatsheet for Benefit Questions
+
+1. **Coverage?** — “Yes/No, and here’s the cost.”
+2. **Cost share?** — Deductible ➜ Copay ➜ Coinsurance ➜ OOP max (only mention what applies).
+3. **Network rule?** — “Any Healthfirst in-network provider” or name the tier.
+4. **Prior auth?** — “Only if the doctor orders more than \_\_ visits.”
+5. **Limits?** — “Up to 20 sessions per year.”
+
+Keep each bullet to **one breath**. If more detail is requested, pull the plan PDF and walk the member through the exact row.
+
+---
+
+### 4 · Quick Phrase Bank (Swap-ins for Script-iness)
+
+| Instead of…                        | Say…                             |
+| ---------------------------------- | -------------------------------- |
+| “Your inquiry is important to us.” | “Glad you called us today.”      |
+| “Please be advised that…”          | “Just so you know…”              |
+| “I will proceed to verify…”        | “Let me just double-check…”      |
+| “Per the Summary of Benefits…”     | “On your plan’s benefits sheet…” |
+
+---
+
+### 5 · Pace & Tone Guardrails
+
+* **Speed target:** 130–160 words per minute (about the pace of a friendly podcast).
+* **Pause rule:** ½-second pause after any dollar amount or date.
+* **Volume:** Indoor-voice, smile-in-your-tone; avoid whispering or shouting.
+* **Empathy cue:** Use the caller’s own words once (“So that knee surgery…”).
+
+---
+
+### 6 · Do & Don’t Mini-Poster
+
+✅ **Do**
+
+* Use the member’s name twice.
+* State the *direct* answer first.
+* Offer to text/email resources.
+
+✖️ **Don’t**
+
+* Read policy language verbatim.
+* Stall while searching—narrate: “Give me 10 seconds to pull that up.”
+* Over-promise (“We’ll definitely approve”)—instead, “We’ll review and let you know.”
+
+---
+
+Stick this one-pager next to the monitor. The H-K-O habit alone will shave minutes off each call and make every answer sound like it’s coming from a helpful human, not a script.
+
+
+
+
+
 
 
 
@@ -416,7 +486,3 @@ Healthfirst’s small employer plans (offered to businesses) are **Exclusive Pro
 **Prior Authorization:** Required for similar services as individual plans – inpatient care, certain outpatient procedures, rehab admissions, some high-cost drugs. Since these are EPOs, the plan must pre-approve out-of-network treatment if ever needed (e.g., a rare specialty service not available in network) or it won’t be covered.
 
 **Conclusion:** Small group EPO plans are used by employers to cover their employees with a range of cost-sharing options. They have **no out-of-network benefits (except emergency)**, so employees should stay in network. They feature **lower premiums at Bronze/Silver with high deductibles**, and **higher premiums at Gold/Platinum with very low out-of-pocket costs**. Employers may add riders (like Pro Plus for dental/vision) to enhance benefits. Call center agents should verify the specific plan design (by looking up the group’s SBC) when assisting members, as exact copays can vary by employer plan.
-
----
-
-**Sources:** Official Healthfirst plan documents and summaries were used to compile this guide, including the Healthfirst Medicaid Managed Care handbook, Essential Plan and Child Health Plus benefit summaries, Healthfirst Medicare Advantage plan pages for CompleteCare, Life Improvement Plan, Connection Plan, Increased Benefit Plan, 65 Plus, and Signature plans, as well as the Healthfirst Summary of Benefits and Coverage for marketplace Leaf plans and provider bulletins about small-group “Pro” EPO network and benefits. This ensures all information is accurate and up-to-date per 2025 plan offerings.
