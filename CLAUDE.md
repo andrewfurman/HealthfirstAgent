@@ -74,6 +74,14 @@ The application follows a modular Flask blueprint architecture:
 - **WebRTC Configuration**: Browser microphone access required for voice chat
 - **AI Instructions**: The AI assistant's behavior is defined by the comprehensive guide in `call_center_guide.md`
 
+## Git Workflow
+
+After making changes and verifying they work correctly:
+1. Commit all changes with descriptive commit messages
+2. Push to the remote repository
+3. Always test changes before committing
+4. Use meaningful commit messages that describe what was changed
+
 ## Important Considerations
 
 - The `voice_chat_sessions/voice_chat_session.py` file is currently empty - any voice session logic should be implemented in `main.py` or this module
