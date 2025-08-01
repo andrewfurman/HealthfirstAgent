@@ -15,7 +15,37 @@ poetry install
 
 ### Run Development Server
 ```bash
+# Run in background (recommended for development)
+source venv/bin/activate && nohup python main.py > flask_server.log 2>&1 &
+
+# Or run in foreground (for debugging)
 poetry run python main.py
+```
+
+### Flask Server Management
+**IMPORTANT**: The Flask development server should always be kept running during development sessions to allow real-time verification of changes. Claude Code will:
+1. Start the Flask server in the background using `nohup` to prevent interruption
+2. Keep the server running even when you press Esc or switch contexts
+3. If a server restart is needed (e.g., after modifying Python files), Claude will notify you in the chat before restarting
+4. The server runs on http://127.0.0.1:8080 by default
+5. Server logs are saved to `flask_server.log`
+
+**After starting/restarting the server**:
+- Claude will immediately provide the localhost URL (http://127.0.0.1:8080) in the chat
+- Claude will ask you to verify changes after updates
+- Claude will continue processing other tasks while the server runs in the background
+- Check logs with: `tail -f flask_server.log`
+
+**To manage the background server**:
+```bash
+# Check if server is running
+ps aux | grep "python main.py"
+
+# Stop the server (replace PID with actual process ID)
+kill PID
+
+# View server logs
+tail -f flask_server.log
 ```
 
 ### Database Management
