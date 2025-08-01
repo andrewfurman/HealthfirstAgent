@@ -42,7 +42,7 @@ def show_plans():
         
         return render_template('plans.html', plans=plans)
 
-@plans_bp.route('/<plan_id>')
+@plans_bp.route('/<int:plan_id>')
 def view_plan(plan_id):
     """Route to display a single plan's details"""
     from plans.plans_model import Plan
@@ -50,7 +50,7 @@ def view_plan(plan_id):
         plan = session.query(Plan).filter(Plan.id == plan_id).first()
         return render_template('view_plan.html', plan=plan)
 
-@plans_bp.route('/<plan_id>/update', methods=['POST'])
+@plans_bp.route('/<int:plan_id>/update', methods=['POST'])
 def update_plan(plan_id):
     """Route to update a plan's details"""
     from plans.plans_model import Plan
@@ -89,8 +89,8 @@ def bulk_create_plans():
             updated_count = 0
             
             for plan_data in plans:
-                # Check if plan already exists
-                existing_plan = session.query(Plan).filter(Plan.id == plan_data['id']).first()
+                # Check if plan already exists by old_id
+                existing_plan = session.query(Plan).filter(Plan.old_id == plan_data.get('id', plan_data.get('old_id'))).first()
                 
                 if existing_plan:
                     # Update existing plan
@@ -108,7 +108,7 @@ def bulk_create_plans():
                 else:
                     # Create new plan
                     new_plan = Plan(
-                        id=plan_data['id'],
+                        old_id=plan_data.get('id', plan_data.get('old_id')),
                         short_name=plan_data['short_name'],
                         full_name=plan_data['full_name'],
                         summary_of_benefits=plan_data.get('summary_of_benefits', ''),
@@ -157,7 +157,7 @@ def api_list_plans():
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-@plans_bp.route('/<plan_id>/delete', methods=['DELETE'])
+@plans_bp.route('/<int:plan_id>/delete', methods=['DELETE'])
 def delete_plan(plan_id):
     """Route to delete a plan"""
     from plans.plans_model import Plan
@@ -172,7 +172,7 @@ def delete_plan(plan_id):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-@plans_bp.route('/api/extract-document/<plan_id>', methods=['POST'])
+@plans_bp.route('/api/extract-document/<int:plan_id>', methods=['POST'])
 def extract_single_plan_document(plan_id):
     """Extract document text for a specific plan"""
     with session_scope() as session:
@@ -236,7 +236,7 @@ def extract_all_plan_documents():
                 'error': f'Unexpected error: {str(e)}'
             }), 500
 
-@plans_bp.route('/api/generate-summary/<plan_id>', methods=['POST'])
+@plans_bp.route('/api/generate-summary/<int:plan_id>', methods=['POST'])
 def generate_plan_summary(plan_id):
     """Generate compressed summary for a specific plan using GPT-4"""
     with session_scope() as session:
@@ -254,6 +254,51 @@ def generate_plan_summary(plan_id):
                     'error': message
                 }), 400
                 
+        except Exception as e:
+            return jsonify({
+                'success': False,
+                'error': f'Unexpected error: {str(e)}'
+            }), 500
+
+@plans_bp.route('/api/generate-all-summaries', methods=['POST'])
+def generate_all_plan_summaries():
+    """Generate compressed summaries for all plans that have extracted document text"""
+    from plans.plans_model import Plan
+    
+    with session_scope() as session:
+        try:
+            # Get all plans with extracted document text
+            plans = session.query(Plan).filter(Plan.plan_document_full_text.isnot(None)).all()
+            
+            results = {
+                'total_plans': len(plans),
+                'successful': 0,
+                'failed': 0,
+                'results': []
+            }
+            
+            for plan in plans:
+                print(f"Generating summary for {plan.short_name}...")
+                success, message = generate_summary_for_plan(plan.id, session)
+                
+                if success:
+                    results['successful'] += 1
+                else:
+                    results['failed'] += 1
+                
+                results['results'].append({
+                    'plan_id': plan.id,
+                    'plan_name': plan.short_name,
+                    'success': success,
+                    'message': message
+                })
+                
+                # Commit after each successful generation to save progress
+                if success:
+                    session.commit()
+            
+            return jsonify(results), 200
+            
         except Exception as e:
             return jsonify({
                 'success': False,
