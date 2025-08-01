@@ -114,9 +114,13 @@ The application follows a modular Flask blueprint architecture:
 
 After making changes and verifying they work correctly:
 1. Commit all changes with descriptive commit messages
-2. Push to the remote repository
+2. **ALWAYS push to the remote repository immediately after committing**
 3. Always test changes before committing
 4. Use meaningful commit messages that describe what was changed
+
+Claude Code will automatically:
+- Run `git push origin main` after every commit
+- Confirm successful push in the chat
 
 ## Important Considerations
 
