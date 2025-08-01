@@ -29,20 +29,14 @@ def show_plans():
     """Route to display the plans page"""
     from plans.plans_model import Plan
     with session_scope() as session:
-        # Sort plans by plan_type (with custom order), then by short_name
+        # Sort plans by plan_type alphabetically, then by short_name alphabetically
         plans = session.query(Plan).all()
         
-        # Define custom sort order for plan types
-        type_order = {
-            'Medicaid': 1,
-            'Medicare': 2,
-            'Dual Eligible': 3,
-            'Marketplace': 4,
-            None: 5  # Handle plans without a type
-        }
-        
-        # Sort plans by type order then alphabetically by short name
-        plans.sort(key=lambda p: (type_order.get(p.plan_type, 5), p.short_name.lower() if p.short_name else ''))
+        # Sort plans first by plan_type alphabetically (None values last), then by short_name alphabetically
+        plans.sort(key=lambda p: (
+            p.plan_type.lower() if p.plan_type else 'zzz',  # None values sort last
+            p.short_name.lower() if p.short_name else ''
+        ))
         
         return render_template('plans.html', plans=plans)
 
@@ -74,6 +68,7 @@ def update_plan(plan_id):
             plan.plan_document_full_text = data.get('plan_document_full_text', plan.plan_document_full_text)
             plan.summary_of_benefit_coverage = data.get('summary_of_benefit_coverage', plan.summary_of_benefit_coverage)
             plan.table_of_contents = data.get('table_of_contents', plan.table_of_contents)
+            plan.document_type = data.get('document_type', plan.document_type)
 
             return jsonify({'message': 'Plan updated successfully'}), 200
         except Exception as e:
@@ -106,6 +101,7 @@ def bulk_create_plans():
                     existing_plan.plan_document_full_text = plan_data.get('plan_document_full_text', existing_plan.plan_document_full_text)
                     existing_plan.summary_of_benefit_coverage = plan_data.get('summary_of_benefit_coverage', existing_plan.summary_of_benefit_coverage)
                     existing_plan.table_of_contents = plan_data.get('table_of_contents', existing_plan.table_of_contents)
+                    existing_plan.document_type = plan_data.get('document_type', existing_plan.document_type)
                     updated_count += 1
                 else:
                     # Create new plan
@@ -119,7 +115,8 @@ def bulk_create_plans():
                         plan_type=plan_data.get('plan_type', ''),
                         plan_document_full_text=plan_data.get('plan_document_full_text', ''),
                         summary_of_benefit_coverage=plan_data.get('summary_of_benefit_coverage', ''),
-                        table_of_contents=plan_data.get('table_of_contents', '')
+                        table_of_contents=plan_data.get('table_of_contents', ''),
+                        document_type=plan_data.get('document_type')
                     )
                     session.add(new_plan)
                     created_count += 1
@@ -151,7 +148,8 @@ def api_list_plans():
                     'plan_type': plan.plan_type,
                     'plan_document_full_text': plan.plan_document_full_text,
                     'summary_of_benefit_coverage': plan.summary_of_benefit_coverage,
-                    'table_of_contents': plan.table_of_contents
+                    'table_of_contents': plan.table_of_contents,
+                    'document_type': plan.document_type
                 })
             return jsonify({'plans': plans_data}), 200
         except Exception as e:
