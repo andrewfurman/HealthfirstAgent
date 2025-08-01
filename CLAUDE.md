@@ -30,6 +30,12 @@ poetry run python main.py
 4. The server runs on http://127.0.0.1:8080 by default
 5. Server logs are saved to `flask_server.log`
 
+**When to restart the server**:
+- After modifying Python files (*.py)
+- After modifying Flask templates (*.html)
+- After changing static files that are cached
+- Claude will automatically restart the server when these changes are made
+
 **After starting/restarting the server**:
 - Claude will immediately provide the localhost URL (http://127.0.0.1:8080) in the chat
 - Claude will ask you to verify changes after updates
