@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, request, jsonify
 from contextlib import contextmanager
 from sqlalchemy.orm import Session
 from plans.document_extractor import update_plan_document_text
+from plans.gpt_summary_generator import generate_summary_for_plan
 
 # Create Blueprint
 plans_bp = Blueprint('plans', __name__, 
@@ -229,6 +230,30 @@ def extract_all_plan_documents():
             
             return jsonify(results), 200
             
+        except Exception as e:
+            return jsonify({
+                'success': False,
+                'error': f'Unexpected error: {str(e)}'
+            }), 500
+
+@plans_bp.route('/api/generate-summary/<plan_id>', methods=['POST'])
+def generate_plan_summary(plan_id):
+    """Generate compressed summary for a specific plan using GPT-4"""
+    with session_scope() as session:
+        try:
+            success, message = generate_summary_for_plan(plan_id, session)
+            
+            if success:
+                return jsonify({
+                    'success': True,
+                    'message': message
+                }), 200
+            else:
+                return jsonify({
+                    'success': False,
+                    'error': message
+                }), 400
+                
         except Exception as e:
             return jsonify({
                 'success': False,
