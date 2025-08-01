@@ -10,25 +10,36 @@
                         <table class="min-w-full divide-y divide-gray-300">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Plan ID</th>
+                                    <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Plan Type</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Short Name</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Full Name</th>
-                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Benefits URL</th>
+                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">View Plan Documents</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 bg-white">
                                 {% for plan in plans %}
                                 <tr>
-                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900">
-                                        <a href="{{ url_for('plans.view_plan', plan_id=plan.id) }}" class="text-purple-900 hover:text-purple-800">
-                                            {{ plan.id }}
+                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm">
+                                        {% if plan.plan_type %}
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium 
+                                              {% if plan.plan_type == 'Medicare' %}bg-blue-100 text-blue-800
+                                              {% elif plan.plan_type == 'Medicaid' %}bg-purple-100 text-purple-800
+                                              {% elif plan.plan_type == 'Dual Eligible' %}bg-amber-100 text-amber-800
+                                              {% elif plan.plan_type == 'Marketplace' %}bg-green-100 text-green-800
+                                              {% endif %}">
+                                            {{ plan.plan_type }}
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                                        <a href="{{ url_for('plans.view_plan', plan_id=plan.id) }}" class="text-green-700 hover:text-green-600 font-medium">
+                                            {{ plan.short_name }}
                                         </a>
                                     </td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">{{ plan.short_name }}</td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">{{ plan.full_name }}</td>
                                     <td class="whitespace-nowrap px-3 py-4 text-gray-600 hover:text-gray-800">
                                         {% if plan.summary_of_benefits_url %}
-                                        <a href="{{ plan.summary_of_benefits_url }}" target="_blank" class="underline">View Benefits</a>
+                                        <a href="{{ plan.summary_of_benefits_url }}" target="_blank" class="text-green-600 hover:text-green-700 underline">View Documents</a>
                                         {% endif %}
                                     </td>
                                 </tr>

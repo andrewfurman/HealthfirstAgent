@@ -13,6 +13,12 @@ class Plan(Base):
     summary_of_benefits = Column(Text)
     summary_of_benefits_url = Column(Text)
     compressed_summary = Column(Text)
+    
+    # New optional columns
+    plan_type = Column(Text)  # Medicare, Medicaid, Dual Eligible, or Marketplace
+    plan_document_full_text = Column(Text)  # Full text of the plan document
+    summary_of_benefit_coverage = Column(Text)  # Summary of benefit coverage (SBC)
+    table_of_contents = Column(Text)  # Table of contents for the plan document
 
     def __repr__(self):
-        return f"<Plan(short_name='{self.short_name}', full_name='{self.full_name}')>"
+        return f"<Plan(short_name='{self.short_name}', full_name='{self.full_name}', plan_type='{self.plan_type}')>"

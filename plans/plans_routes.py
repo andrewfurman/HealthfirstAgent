@@ -29,7 +29,21 @@ def show_plans():
     """Route to display the plans page"""
     from plans.plans_model import Plan
     with session_scope() as session:
+        # Sort plans by plan_type (with custom order), then by short_name
         plans = session.query(Plan).all()
+        
+        # Define custom sort order for plan types
+        type_order = {
+            'Medicaid': 1,
+            'Medicare': 2,
+            'Dual Eligible': 3,
+            'Marketplace': 4,
+            None: 5  # Handle plans without a type
+        }
+        
+        # Sort plans by type order then alphabetically by short name
+        plans.sort(key=lambda p: (type_order.get(p.plan_type, 5), p.short_name.lower() if p.short_name else ''))
+        
         return render_template('plans.html', plans=plans)
 
 @plans_bp.route('/<plan_id>')
@@ -56,6 +70,10 @@ def update_plan(plan_id):
             plan.summary_of_benefits = data.get('summary_of_benefits', plan.summary_of_benefits)
             plan.summary_of_benefits_url = data.get('summary_of_benefits_url', plan.summary_of_benefits_url)
             plan.compressed_summary = data.get('compressed_summary', plan.compressed_summary)
+            plan.plan_type = data.get('plan_type', plan.plan_type)
+            plan.plan_document_full_text = data.get('plan_document_full_text', plan.plan_document_full_text)
+            plan.summary_of_benefit_coverage = data.get('summary_of_benefit_coverage', plan.summary_of_benefit_coverage)
+            plan.table_of_contents = data.get('table_of_contents', plan.table_of_contents)
 
             return jsonify({'message': 'Plan updated successfully'}), 200
         except Exception as e:
@@ -84,6 +102,10 @@ def bulk_create_plans():
                     existing_plan.summary_of_benefits = plan_data.get('summary_of_benefits', existing_plan.summary_of_benefits)
                     existing_plan.summary_of_benefits_url = plan_data.get('summary_of_benefits_url', existing_plan.summary_of_benefits_url)
                     existing_plan.compressed_summary = plan_data.get('compressed_summary', existing_plan.compressed_summary)
+                    existing_plan.plan_type = plan_data.get('plan_type', existing_plan.plan_type)
+                    existing_plan.plan_document_full_text = plan_data.get('plan_document_full_text', existing_plan.plan_document_full_text)
+                    existing_plan.summary_of_benefit_coverage = plan_data.get('summary_of_benefit_coverage', existing_plan.summary_of_benefit_coverage)
+                    existing_plan.table_of_contents = plan_data.get('table_of_contents', existing_plan.table_of_contents)
                     updated_count += 1
                 else:
                     # Create new plan
@@ -93,7 +115,11 @@ def bulk_create_plans():
                         full_name=plan_data['full_name'],
                         summary_of_benefits=plan_data.get('summary_of_benefits', ''),
                         summary_of_benefits_url=plan_data.get('summary_of_benefits_url', ''),
-                        compressed_summary=plan_data.get('compressed_summary', '')
+                        compressed_summary=plan_data.get('compressed_summary', ''),
+                        plan_type=plan_data.get('plan_type', ''),
+                        plan_document_full_text=plan_data.get('plan_document_full_text', ''),
+                        summary_of_benefit_coverage=plan_data.get('summary_of_benefit_coverage', ''),
+                        table_of_contents=plan_data.get('table_of_contents', '')
                     )
                     session.add(new_plan)
                     created_count += 1
@@ -121,8 +147,27 @@ def api_list_plans():
                     'full_name': plan.full_name,
                     'summary_of_benefits': plan.summary_of_benefits,
                     'summary_of_benefits_url': plan.summary_of_benefits_url,
-                    'compressed_summary': plan.compressed_summary
+                    'compressed_summary': plan.compressed_summary,
+                    'plan_type': plan.plan_type,
+                    'plan_document_full_text': plan.plan_document_full_text,
+                    'summary_of_benefit_coverage': plan.summary_of_benefit_coverage,
+                    'table_of_contents': plan.table_of_contents
                 })
             return jsonify({'plans': plans_data}), 200
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+@plans_bp.route('/<plan_id>/delete', methods=['DELETE'])
+def delete_plan(plan_id):
+    """Route to delete a plan"""
+    from plans.plans_model import Plan
+    with session_scope() as session:
+        try:
+            plan = session.query(Plan).filter(Plan.id == plan_id).first()
+            if not plan:
+                return jsonify({'error': 'Plan not found'}), 404
+            
+            session.delete(plan)
+            return jsonify({'message': f'Plan {plan_id} deleted successfully'}), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500

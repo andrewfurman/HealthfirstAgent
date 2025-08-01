@@ -1,0 +1,33 @@
+Below is a refreshed version of the Healthfirst plan matrix.  I kept the same groupings you asked for, but added a new column with the best “Summary of Benefits” (or equivalent SBC) PDF I could locate for each plan. If a plan does not appear to have a public‐facing summary document online, I’ve written **“Not found”**.
+
+| Category                                 | Plan                                            | Abbrev. | PDF link                                                                                                                                                                                     |
+| ---------------------------------------- | ----------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Medicaid**                             | Managed Care (incl. HARP)                       | —       | **Not found**                                                                                                                                                                                |
+|                                          | Essential Plan                                  | EP      | [NY Essential Plan – Costs & Benefits (state SBC)](https://info.nystateofhealth.ny.gov/sites/default/files/Essential%20Plan%20Benefits%20and%20Cost%20Sharing.pdf) ([NY State of Health][1]) |
+|                                          | Child Health Plus                               | CHP     | [Child Health Plus “At-a-Glance”](https://info.nystateofhealth.ny.gov/sites/default/files/Child%20Health%20Plus%20At%20A%20Glance%20Card%20-%20English_3.pdf) ([NY State of Health][2])      |
+| **Medicaid – LTSS**                      | Complete Care (HMO D-SNP)                       | —       | [2025 Summary of Benefits](https://assets.healthfirst.org/pdf_pnVHJRXSPhoO/2025-completecare-plan-summary-of-benefits-english)                                                               |
+|                                          | Senior Health Partners (MLTC)                   | MLTC    | **Not found**                                                                                                                                                                                |
+| **Medicare Advantage**                   | Life Improvement Plan (HMO D-SNP)               | LIP     | [2025 Summary of Benefits](https://assets.healthfirst.org/pdf_4wfk6FGlW6Fh/2025-life-improvement-plan-summary-of-benefits-english) ([assets.healthfirst.org][3])                             |
+|                                          | Connection Plan (HMO D-SNP)                     | CNX     | [2025 Summary of Benefits](https://assets.healthfirst.org/pdf_K3tpLSAMqCnR/2025-connection-plan-summary-of-benefits-english)                                                                 |
+|                                          | Increased Benefit Plan (HMO)                    | IBP     | [2025 Summary of Benefits](https://assets.healthfirst.org/pdf_CGLSun3nxred/2025-increased-benefits-plan-summary-of-benefits-english)                                                         |
+|                                          | 65 Plus Plan (HMO)                              | 65+     | [2025 Summary of Benefits](https://assets.healthfirst.org/pdf_8hMkAKJ47jiD/2025-65-plus-plan-summary-of-benefits-english)                                                                    |
+| **Qualified Health Plans (Marketplace)** | Leaf & Leaf Premier metal-tier plans (11 total) | QHP     | [Platinum Leaf Plan – 2025 SBC](https://assets.healthfirst.org/pdf_dsF5didylWP2/2025-platinum-leaf-plan-summary-of-benefits-english) ([assets.healthfirst.org][4])                           |
+| **Commercial (Small Group)**             | HFIC Small Group EPO                            | HFIC    | [Gold Pro EPO – 2021 SBC (latest public)](https://healthpass.com/wp-content/uploads/2022/03/healthfirst-gold-pro-epo.pdf) ([HealthPass][5])                                                  |
+| **Medicare Signature line**              | Signature (HMO) – HFHP                          | —       | [2025 Summary of Benefits](https://assets.healthfirst.org/pdf_pSh5lZgSJKCE/2025-signature-hmo-summary-of-benefits-english) ([assets.healthfirst.org][6])                                     |
+|                                          | Signature (PPO) – HFIC                          | —       | [2025 Summary of Benefits](https://assets.healthfirst.org/pdf_oziqcD6zXBQF/2025-signature-ppo-summary-of-benefits-english)                                                                   |
+
+### A few quick notes
+
+* **Medicaid Managed Care & Senior Health Partners** – Healthfirst only posts member handbooks (not true “summary-of-benefits” PDFs) for these lines of business; none surfaced despite multiple searches of Healthfirst’s document library and NY State sources, so they’re listed as **Not found**.
+* **Marketplace/QHP** – Each metal-tier Leaf (and Leaf Premier) plan has its own 7-page Summary of Benefits & Coverage. I’ve linked the Platinum Leaf as a representative sample; the full set is available on the same page if you need all 11. ([Healthfirst][7])
+* **HFIC Small Group EPO** – Rates and SBCs vanish after 2023 because the product sunsets in 2025. The 2021-22 SBCs are still the latest public PDFs.
+
+Let me know if you’d like these assembled into a spreadsheet or if you need help locating the plan handbooks that replace “Not found” rows.
+
+[1]: https://info.nystateofhealth.ny.gov/sites/default/files/Essential%20Plan%20Benefits%20and%20Cost%20Sharing.pdf?utm_source=chatgpt.com "[PDF] Summary of Essential Plan Costs and Benefits - NY State of Health"
+[2]: https://info.nystateofhealth.ny.gov/sites/default/files/Child%20Health%20Plus%20At%20A%20Glance%20Card%20-%20English_3.pdf?utm_source=chatgpt.com "[PDF] Child Health Plus At a Glance"
+[3]: https://assets.healthfirst.org/pdf_4wfk6FGlW6Fh/2025-life-improvement-plan-summary-of-benefits-english "0643-24-SummaryofBenefits-LIP-EN-v14wr"
+[4]: https://assets.healthfirst.org/pdf_dsF5didylWP2/2025-platinum-leaf-plan-summary-of-benefits-english "Microsoft Word - HF-PSBC-STD-24 Final"
+[5]: https://healthpass.com/wp-content/uploads/2022/03/healthfirst-gold-pro-epo.pdf?utm_source=chatgpt.com "[PDF] Healthfirst: Gold Pro EPO | HealthPass"
+[6]: https://assets.healthfirst.org/pdf_pSh5lZgSJKCE/2025-signature-hmo-summary-of-benefits-english "0664-24-SummaryofBenefits-SigHMO-EN-v10wr"
+[7]: https://healthfirst.org/healthfirst-summary-of-benefits "Summary of Benefits & Coverage | Healthfirst"
