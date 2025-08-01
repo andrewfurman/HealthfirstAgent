@@ -60,3 +60,69 @@ def update_plan(plan_id):
             return jsonify({'message': 'Plan updated successfully'}), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500
+
+@plans_bp.route('/bulk-create', methods=['POST'])
+def bulk_create_plans():
+    """Route to create multiple plans at once"""
+    from plans.plans_model import Plan
+    with session_scope() as session:
+        try:
+            data = request.json
+            plans = data.get('plans', [])
+            
+            created_count = 0
+            updated_count = 0
+            
+            for plan_data in plans:
+                # Check if plan already exists
+                existing_plan = session.query(Plan).filter(Plan.id == plan_data['id']).first()
+                
+                if existing_plan:
+                    # Update existing plan
+                    existing_plan.short_name = plan_data.get('short_name', existing_plan.short_name)
+                    existing_plan.full_name = plan_data.get('full_name', existing_plan.full_name)
+                    existing_plan.summary_of_benefits = plan_data.get('summary_of_benefits', existing_plan.summary_of_benefits)
+                    existing_plan.summary_of_benefits_url = plan_data.get('summary_of_benefits_url', existing_plan.summary_of_benefits_url)
+                    existing_plan.compressed_summary = plan_data.get('compressed_summary', existing_plan.compressed_summary)
+                    updated_count += 1
+                else:
+                    # Create new plan
+                    new_plan = Plan(
+                        id=plan_data['id'],
+                        short_name=plan_data['short_name'],
+                        full_name=plan_data['full_name'],
+                        summary_of_benefits=plan_data.get('summary_of_benefits', ''),
+                        summary_of_benefits_url=plan_data.get('summary_of_benefits_url', ''),
+                        compressed_summary=plan_data.get('compressed_summary', '')
+                    )
+                    session.add(new_plan)
+                    created_count += 1
+            
+            return jsonify({
+                'message': f'Successfully processed {len(plans)} plans',
+                'created': created_count,
+                'updated': updated_count
+            }), 200
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+@plans_bp.route('/api/list', methods=['GET'])
+def api_list_plans():
+    """API endpoint to list all plans"""
+    from plans.plans_model import Plan
+    with session_scope() as session:
+        try:
+            plans = session.query(Plan).all()
+            plans_data = []
+            for plan in plans:
+                plans_data.append({
+                    'id': plan.id,
+                    'short_name': plan.short_name,
+                    'full_name': plan.full_name,
+                    'summary_of_benefits': plan.summary_of_benefits,
+                    'summary_of_benefits_url': plan.summary_of_benefits_url,
+                    'compressed_summary': plan.compressed_summary
+                })
+            return jsonify({'plans': plans_data}), 200
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
