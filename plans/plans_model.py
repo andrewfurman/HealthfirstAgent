@@ -19,6 +19,7 @@ class Plan(Base):
     plan_document_full_text = Column(Text)  # Full text of the plan document
     summary_of_benefit_coverage = Column(Text)  # Summary of benefit coverage (SBC)
     table_of_contents = Column(Text)  # Table of contents for the plan document
+    document_type = Column(String(20))  # 'pdf' or 'website' - indicates the type of document linked
 
     def __repr__(self):
         return f"<Plan(short_name='{self.short_name}', full_name='{self.full_name}', plan_type='{self.plan_type}')>"
