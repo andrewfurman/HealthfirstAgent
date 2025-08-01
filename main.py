@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 import requests
 import json # Added for JSON loading in error handling
 from flask import Flask, render_template, jsonify, request
@@ -7,7 +8,9 @@ from plans.plans_model import Base
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import QueuePool
-import os
+
+# Load environment variables from .env file
+load_dotenv()
 
 # --- Configuration ---
 # It's highly recommended to load sensitive keys from environment variables
@@ -27,6 +30,9 @@ INSTRUCTIONS_FILENAME = "call_center_guide.md" # Define the filename for instruc
 
 # --- Database Initialization ---
 database_url = os.environ.get('DATABASE_URL')
+Session = None  # Initialize Session variable
+engine = None   # Initialize engine variable
+
 if database_url:
     # Use connection pooling with retry settings
     engine = create_engine(
