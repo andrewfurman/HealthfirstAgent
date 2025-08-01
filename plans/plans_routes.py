@@ -2,6 +2,7 @@
 from flask import Blueprint, render_template, request, jsonify
 from contextlib import contextmanager
 from sqlalchemy.orm import Session
+from plans.document_extractor import update_plan_document_text
 
 # Create Blueprint
 plans_bp = Blueprint('plans', __name__, 
@@ -169,3 +170,67 @@ def delete_plan(plan_id):
             return jsonify({'message': f'Plan {plan_id} deleted successfully'}), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500
+
+@plans_bp.route('/api/extract-document/<plan_id>', methods=['POST'])
+def extract_single_plan_document(plan_id):
+    """Extract document text for a specific plan"""
+    with session_scope() as session:
+        try:
+            success, message = update_plan_document_text(plan_id, session)
+            
+            if success:
+                return jsonify({
+                    'success': True,
+                    'message': message
+                }), 200
+            else:
+                return jsonify({
+                    'success': False,
+                    'error': message
+                }), 400
+                
+        except Exception as e:
+            return jsonify({
+                'success': False,
+                'error': f'Unexpected error: {str(e)}'
+            }), 500
+
+@plans_bp.route('/api/extract-all-documents', methods=['POST'])
+def extract_all_plan_documents():
+    """Extract document text for all plans that have URLs"""
+    from plans.plans_model import Plan
+    
+    with session_scope() as session:
+        try:
+            # Get all plans with URLs
+            plans = session.query(Plan).filter(Plan.summary_of_benefits_url.isnot(None)).all()
+            
+            results = {
+                'total_plans': len(plans),
+                'successful': 0,
+                'failed': 0,
+                'results': []
+            }
+            
+            for plan in plans:
+                success, message = update_plan_document_text(plan.id, session)
+                
+                if success:
+                    results['successful'] += 1
+                else:
+                    results['failed'] += 1
+                
+                results['results'].append({
+                    'plan_id': plan.id,
+                    'plan_name': plan.short_name,
+                    'success': success,
+                    'message': message
+                })
+            
+            return jsonify(results), 200
+            
+        except Exception as e:
+            return jsonify({
+                'success': False,
+                'error': f'Unexpected error: {str(e)}'
+            }), 500
