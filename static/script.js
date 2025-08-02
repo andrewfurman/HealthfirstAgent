@@ -59,8 +59,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (e.streams && e.streams[0]) {
                     remoteAudio.srcObject = e.streams[0];
                     console.log('Assigned remote stream to audio element.');
-                    // Attempt to play audio programmatically after user interaction
-                    remoteAudio.play().catch(e => console.error("Audio play failed:", e));
+                     // Attempt to play audio programmatically after user interaction
+                     remoteAudio.play().catch(e => console.error("Audio play failed:", e));
                 } else {
                      console.warn("Received track event without streams.");
                      // Fallback for older browser compatibility if needed, but less common now
@@ -117,38 +117,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Log the parsed message type for easier debugging
                     // console.log(`Parsed message type: ${messageData.type}`);
 
-                    // Check for function call events
-                    if (messageData.type === "response.function_call_arguments.done") {
-                        console.log("Function call completed:", messageData.name, messageData.arguments);
-                        // Display the function call in the transcript
-                        if (typeof displayToolCall === 'function') {
-                            try {
-                                const args = JSON.parse(messageData.arguments);
-                                displayToolCall(messageData.name, args);
-                            } catch (e) {
-                                console.error("Failed to parse function arguments:", e);
-                            }
-                        }
-                    }
-                    // Also check for function calls in response.done events
-                    else if (messageData.type === "response.done" && messageData.response?.output) {
-                        for (const output of messageData.response.output) {
-                            if (output.type === "function_call" && output.name) {
-                                console.log("Function call in response.done:", output.name);
-                                if (typeof displayToolCall === 'function') {
-                                    try {
-                                        const args = JSON.parse(output.arguments || '{}');
-                                        displayToolCall(output.name, args);
-                                    } catch (e) {
-                                        console.error("Failed to parse function arguments:", e);
-                                    }
-                                }
-                            }
-                        }
-                    }
                     // Check for the specific event that contains the final transcript for an utterance
                     // Based on OpenAI docs and your transcript_seen.md, 'response.audio_transcript.done' is key.
-                    else if (messageData.type === "response.audio_transcript.done" && messageData.transcript) {
+                    if (messageData.type === "response.audio_transcript.done" && messageData.transcript) {
                         console.log("Received final transcript:", messageData.transcript);
                         // Check if the display function from print_transcript.js exists
                         if (typeof displayFinalTranscript === 'function') {
