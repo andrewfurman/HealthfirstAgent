@@ -181,7 +181,7 @@ def get_session_token():
     payload = {
         "model": OPENAI_REALTIME_MODEL,
         "voice": "alloy",
-        "modalities": ["audio", "text"], # Enable both audio and text output
+        # "modalities": ["audio", "text"], # Commenting out to test if this is causing the muted track issue
 
         # --- Optional: Input Transcription settings ---
         # Verify the exact parameter name and structure from API docs if you need this.
