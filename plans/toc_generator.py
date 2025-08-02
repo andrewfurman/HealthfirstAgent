@@ -31,6 +31,12 @@ def gpt_generate_table_of_contents(plan_id: str, plan_name: str, document_text: 
         prompt = f"""You are analyzing a health insurance plan document for "{plan_name}". 
 Create a clean, hierarchical table of contents in markdown format that shows the structure and organization of the document.
 
+CRITICAL REQUIREMENTS:
+1. ALWAYS include page numbers when they exist in the document
+2. Look for patterns like "page X", "...X", "X" at the end of section titles
+3. Extract page numbers from any table of contents already in the document
+4. If no explicit TOC exists, look for section headers with page breaks or "Page X of Y" markers
+
 The table of contents should:
 1. Use simple markdown lists and headers without ANY dots, periods, or dashes as separators
 2. Put page numbers (if present) right after the section name with just a space
@@ -69,6 +75,8 @@ IMPORTANT:
 - Extract the ACTUAL sections from the document
 - NO decorative dots or dashes between text and page numbers
 - Keep section names short and clear
+- LOOK CAREFULLY for page numbers - they are often present in the original TOC or as "Page X" markers
+- If you see patterns like "Section Name.....14" or "Section Name — 14", extract the page number as 14
 
 PLAN DOCUMENT TEXT:
 {document_text[:40000]}  # Limit to first 40k characters for context
