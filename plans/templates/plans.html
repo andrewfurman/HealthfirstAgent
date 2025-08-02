@@ -1,7 +1,7 @@
 {% extends "header.html" %}
 {% block content %}
 <body class="bg-gray-50 min-h-screen">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div style="padding: 20px;">
 
         <div class="mt-8 flex flex-col">
             <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -13,6 +13,7 @@
                                     <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Plan Type</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Plan</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Full Plan Name</th>
+                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Description</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Plan Documents</th>
                                 </tr>
                             </thead>
@@ -36,7 +37,14 @@
                                             {{ plan.short_name }}
                                         </a>
                                     </td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">{{ plan.full_name }}</td>
+                                    <td class="px-3 py-4 text-sm text-gray-900">{{ plan.full_name }}</td>
+                                    <td class="px-3 py-4 text-xs text-gray-600 max-w-md">
+                                        {% if plan.plan_description %}
+                                        {{ plan.plan_description }}
+                                        {% else %}
+                                        <span class="text-gray-400 italic">No description available</span>
+                                        {% endif %}
+                                    </td>
                                     <td class="whitespace-nowrap px-3 py-4 text-gray-600 hover:text-gray-800">
                                         {% if plan.summary_of_benefits_url %}
                                         <a href="{{ plan.summary_of_benefits_url }}" target="_blank" class="inline-flex items-center gap-2 text-green-600 hover:text-green-700 underline">
