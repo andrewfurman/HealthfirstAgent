@@ -79,7 +79,10 @@
 ## Technical Debt
 
 ### Code Cleanup
-- [ ] Remove unused `voice_chat_sessions/voice_chat_session.py` file
+- [ ] Refactor voice session logic from main.py into `voice_chat_sessions/voice_chat_session.py`
+  - Move `/session` endpoint logic to dedicated module
+  - Create VoiceSessionManager class to handle session creation
+  - Separate OpenAI configuration from main application file
 - [ ] Refactor session configuration into separate config file
 - [ ] Move database models to separate models directory
 - [ ] Standardize error handling across the application
