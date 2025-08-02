@@ -56,11 +56,30 @@ document.addEventListener('DOMContentLoaded', function() {
             // 3. Set up to play remote audio from the model
             pc.ontrack = e => {
                 console.log('Remote track received:', e.track);
+                console.log('Track kind:', e.track.kind);
+                console.log('Track enabled:', e.track.enabled);
+                console.log('Track muted:', e.track.muted);
+                console.log('Track readyState:', e.track.readyState);
+                
                 if (e.streams && e.streams[0]) {
-                    remoteAudio.srcObject = e.streams[0];
+                    const stream = e.streams[0];
+                    console.log('Stream active:', stream.active);
+                    console.log('Stream id:', stream.id);
+                    console.log('Audio tracks in stream:', stream.getAudioTracks().length);
+                    
+                    remoteAudio.srcObject = stream;
                     console.log('Assigned remote stream to audio element.');
-                     // Attempt to play audio programmatically after user interaction
-                     remoteAudio.play().catch(e => console.error("Audio play failed:", e));
+                    console.log('Audio element paused:', remoteAudio.paused);
+                    console.log('Audio element muted:', remoteAudio.muted);
+                    console.log('Audio element volume:', remoteAudio.volume);
+                    
+                    // Attempt to play audio programmatically after user interaction
+                    remoteAudio.play()
+                        .then(() => {
+                            console.log('Audio playback started successfully');
+                            console.log('Audio element paused after play:', remoteAudio.paused);
+                        })
+                        .catch(e => console.error("Audio play failed:", e));
                 } else {
                      console.warn("Received track event without streams.");
                      // Fallback for older browser compatibility if needed, but less common now
