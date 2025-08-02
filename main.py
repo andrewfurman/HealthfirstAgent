@@ -4,6 +4,12 @@ import requests
 import json # Added for JSON loading in error handling
 from flask import Flask, render_template, jsonify, request
 from plans.plans_routes import plans_bp
+from realtime_functions import (
+    get_plan_coverage_summary,
+    get_plan_table_of_contents,
+    search_plan_document,
+    get_all_plans_summary
+)
 from plans.plans_model import Base
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
@@ -85,6 +91,55 @@ def index():
     """Serves the main HTML page."""
     return render_template('index.html')
 
+@app.route('/execute-function', methods=['POST'])
+def execute_function():
+    """
+    Execute a function called by the OpenAI Realtime API.
+    This endpoint is called when the voice assistant needs to query plan information.
+    """
+    try:
+        data = request.json
+        function_name = data.get('name')
+        arguments = data.get('arguments', {})
+        
+        print(f"Executing function: {function_name} with arguments: {arguments}")
+        
+        if not Session:
+            return jsonify({"error": "Database not available"}), 500
+            
+        db_session = Session()
+        
+        try:
+            # Execute the appropriate function
+            if function_name == 'get_plan_coverage_summary':
+                result = get_plan_coverage_summary(
+                    arguments.get('plan_name', ''),
+                    db_session
+                )
+            elif function_name == 'get_plan_table_of_contents':
+                result = get_plan_table_of_contents(
+                    arguments.get('plan_name', ''),
+                    db_session
+                )
+            elif function_name == 'search_plan_document':
+                result = search_plan_document(
+                    arguments.get('plan_name', ''),
+                    arguments.get('search_term', ''),
+                    db_session
+                )
+            else:
+                result = {"error": f"Unknown function: {function_name}"}
+            
+            print(f"Function result: {json.dumps(result)[:500]}...")  # Log first 500 chars
+            return jsonify(result)
+            
+        finally:
+            db_session.close()
+            
+    except Exception as e:
+        print(f"Error executing function: {e}")
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/session', methods=['GET'])
 def get_session_token():
     """
@@ -104,7 +159,18 @@ def get_session_token():
     # <<< START MODIFICATION: Call updated function name >>>
     instructions_text = read_instructions_from_file() # Can be None if file not found/error
     # <<< END MODIFICATION >>>
-
+    
+    # Generate plans summary for initial context
+    plans_summary = ""
+    if Session:
+        db_session = Session()
+        try:
+            plans_summary = get_all_plans_summary(db_session)
+            print(f"Generated plans summary ({len(plans_summary)} characters)")
+        except Exception as e:
+            print(f"Error generating plans summary: {e}")
+        finally:
+            db_session.close()
 
     headers = {
         "Authorization": f"Bearer {OPENAI_API_KEY}",
@@ -130,17 +196,74 @@ def get_session_token():
             "eagerness": "high"      # Value: eagerness set to high
             # 'create_response': True, # Default, usually no need to specify
             # 'interrupt_response': True # Default, usually no need to specify
-        }
-        # Add any other required top-level parameters for the specific API endpoint here
+        },
+        
+        # --- Function Calling Tools ---
+        "tools": [
+            {
+                "type": "function",
+                "name": "get_plan_coverage_summary",
+                "description": "Get comprehensive coverage details and benefits for a specific health plan by name",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "plan_name": {
+                            "type": "string",
+                            "description": "The name or partial name of the health plan (e.g., 'Gold', 'CompleteCare', 'Signature HMO')"
+                        }
+                    },
+                    "required": ["plan_name"]
+                }
+            },
+            {
+                "type": "function",
+                "name": "get_plan_table_of_contents",
+                "description": "Get the table of contents to find specific sections and page numbers in plan documents",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "plan_name": {
+                            "type": "string",
+                            "description": "The name or partial name of the health plan"
+                        }
+                    },
+                    "required": ["plan_name"]
+                }
+            },
+            {
+                "type": "function",
+                "name": "search_plan_document",
+                "description": "Search within a plan's documents for specific information like prior authorization, copays, coverage details",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "plan_name": {
+                            "type": "string",
+                            "description": "The name or partial name of the health plan"
+                        },
+                        "search_term": {
+                            "type": "string",
+                            "description": "The term or phrase to search for (e.g., 'prior authorization', 'emergency care', 'prescription drugs')"
+                        }
+                    },
+                    "required": ["plan_name", "search_term"]
+                }
+            }
+        ],
+        "tool_choice": "auto"  # Let the model decide when to use tools
     }
 
-    # Only add 'instructions' to the payload if the content was read successfully
-    # <<< START MODIFICATION: Use updated variable name >>>
-    if instructions_text:
-        payload["instructions"] = instructions_text
-        print(f"Including instructions from '{INSTRUCTIONS_FILENAME}' in session creation request.")
+    # Combine instructions with plans summary
+    full_instructions = instructions_text or ""
+    if plans_summary:
+        full_instructions += f"\n\n## Available Health Plans Overview\n{plans_summary}\n\nUse the functions to get detailed information about specific plans when needed."
+    
+    # Only add 'instructions' to the payload if we have content
+    if full_instructions:
+        payload["instructions"] = full_instructions
+        print(f"Including instructions and plans summary in session creation request.")
     else:
-         print(f"No instructions file '{INSTRUCTIONS_FILENAME}' found or read error; session will be created without custom instructions.")
+         print(f"No instructions found; session will be created without custom instructions.")
     # <<< END MODIFICATION >>>
 
 

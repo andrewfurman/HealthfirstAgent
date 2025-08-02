@@ -349,7 +349,7 @@ def generate_all_plan_tocs():
             
             for plan in plans:
                 print(f"Generating table of contents for {plan.short_name}...")
-                success, message = generate_toc_for_plan(plan.id, session)
+                success, message = gpt_generate_toc_for_plan(plan.id, session)
                 
                 if success:
                     results['successful'] += 1

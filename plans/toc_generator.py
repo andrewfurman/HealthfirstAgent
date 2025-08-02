@@ -29,39 +29,46 @@ def gpt_generate_table_of_contents(plan_id: str, plan_name: str, document_text: 
         
         # Construct the prompt
         prompt = f"""You are analyzing a health insurance plan document for "{plan_name}". 
-Create a detailed, hierarchical table of contents in markdown format that shows the structure and organization of the document.
+Create a clean, hierarchical table of contents in markdown format that shows the structure and organization of the document.
 
 The table of contents should:
-1. Use proper markdown heading hierarchy (##, ###, ####)
-2. Include page numbers or section numbers if present in the document
+1. Use simple markdown lists and headers without ANY dots, periods, or dashes as separators
+2. Put page numbers (if present) right after the section name with just a space
 3. Show all major sections and important subsections
 4. Maintain the exact structure as it appears in the document
-5. Include appendices, glossaries, or reference sections if present
+5. Keep section titles concise - use abbreviations where appropriate
 
-Format the output as a clean markdown outline that can be used for navigation. For example:
+Format Rules:
+- NO dots (.........) between titles and page numbers
+- Just use a space and the page number: "Section Name 42"
+- Use markdown headers (##, ###) for main sections
+- Use bullet points (-) for subsections
+- Keep it clean and minimal
+
+Example format:
 
 ## Table of Contents
 
-### 1. Introduction
-- Welcome to Your Plan
-- How to Use This Document
+### A. Disclaimers 2
 
-### 2. Plan Benefits Overview
-#### 2.1 Medical Services
-- Primary Care
-- Specialist Care
-- Hospital Services
-#### 2.2 Prescription Drugs
-- Formulary Tiers
-- Mail Order Options
+### B. Frequently asked questions 3
 
-### 3. Cost Sharing
-#### 3.1 Deductibles and Out-of-Pocket Maximums
-#### 3.2 Copayments and Coinsurance
+### C. Overview of services 9
 
-[Continue with all sections...]
+### D. Additional services CompleteCare covers 31
 
-IMPORTANT: Extract the ACTUAL table of contents structure from the document. Do not create a generic structure.
+### E. Benefits covered outside of CompleteCare 32
+
+### F. Services not covered 33
+
+### G. Your rights and responsibilities 34
+
+### H. How to file a complaint 37
+
+IMPORTANT: 
+- Extract the ACTUAL sections from the document
+- NO decorative dots or dashes between text and page numbers
+- Keep section names short and clear
 
 PLAN DOCUMENT TEXT:
 {document_text[:40000]}  # Limit to first 40k characters for context
