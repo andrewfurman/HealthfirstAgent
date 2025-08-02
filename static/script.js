@@ -117,9 +117,38 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Log the parsed message type for easier debugging
                     // console.log(`Parsed message type: ${messageData.type}`);
 
+                    // Check for function call events
+                    if (messageData.type === "response.function_call_arguments.done") {
+                        console.log("Function call completed:", messageData.name, messageData.arguments);
+                        // Display the function call in the transcript
+                        if (typeof displayToolCall === 'function') {
+                            try {
+                                const args = JSON.parse(messageData.arguments);
+                                displayToolCall(messageData.name, args);
+                            } catch (e) {
+                                console.error("Failed to parse function arguments:", e);
+                            }
+                        }
+                    }
+                    // Also check for function calls in response.done events
+                    else if (messageData.type === "response.done" && messageData.response?.output) {
+                        for (const output of messageData.response.output) {
+                            if (output.type === "function_call" && output.name) {
+                                console.log("Function call in response.done:", output.name);
+                                if (typeof displayToolCall === 'function') {
+                                    try {
+                                        const args = JSON.parse(output.arguments || '{}');
+                                        displayToolCall(output.name, args);
+                                    } catch (e) {
+                                        console.error("Failed to parse function arguments:", e);
+                                    }
+                                }
+                            }
+                        }
+                    }
                     // Check for the specific event that contains the final transcript for an utterance
                     // Based on OpenAI docs and your transcript_seen.md, 'response.audio_transcript.done' is key.
-                    if (messageData.type === "response.audio_transcript.done" && messageData.transcript) {
+                    else if (messageData.type === "response.audio_transcript.done" && messageData.transcript) {
                         console.log("Received final transcript:", messageData.transcript);
                         // Check if the display function from print_transcript.js exists
                         if (typeof displayFinalTranscript === 'function') {

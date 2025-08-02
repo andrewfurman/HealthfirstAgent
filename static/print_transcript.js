@@ -7,6 +7,60 @@
 let isFirstTranscript = true;
 
 /**
+ * Displays a tool/function call notification in the transcript output area.
+ * It shows what tool was called in a plain English format.
+ *
+ * @param {string} toolName - The name of the tool that was called
+ * @param {object} arguments - The arguments passed to the tool
+ */
+function displayToolCall(toolName, arguments) {
+    const transcriptContainer = document.getElementById('transcriptOutput');
+
+    if (!transcriptContainer) {
+        console.error("Error: Transcript container element with ID 'transcriptOutput' not found.");
+        return;
+    }
+
+    // Remove placeholder if this is the first entry
+    if (isFirstTranscript) {
+        const placeholder = transcriptContainer.querySelector('.text-gray-400.italic');
+        if (placeholder) {
+            transcriptContainer.removeChild(placeholder);
+        }
+        isFirstTranscript = false;
+    }
+
+    // Create a new paragraph for the tool call notification
+    const newEntry = document.createElement('p');
+    newEntry.style.color = '#6B7280'; // Gray color for tool calls
+    newEntry.style.fontStyle = 'italic';
+    
+    // Create plain English description based on the tool name
+    let description = '🔧 ';
+    
+    switch(toolName) {
+        case 'get_plan_coverage_summary':
+            description += `Looking up coverage summary for ${arguments.plan_name || 'plan'}...`;
+            break;
+        case 'get_plan_table_of_contents':
+            description += `Retrieving table of contents for ${arguments.plan_name || 'plan'}...`;
+            break;
+        case 'search_plan_document':
+            description += `Searching for "${arguments.search_term || ''}" in ${arguments.plan_name || 'plan'} documents...`;
+            break;
+        case 'get_all_plans_summary':
+            description += 'Getting summary of all available plans...';
+            break;
+        default:
+            description += `Calling ${toolName}...`;
+    }
+    
+    newEntry.textContent = description;
+    transcriptContainer.appendChild(newEntry);
+    transcriptContainer.scrollTop = transcriptContainer.scrollHeight;
+}
+
+/**
  * Displays a complete transcript utterance in the transcript output area on the HTML page.
  * It appends the new text as a paragraph and scrolls the container to the bottom.
  *
