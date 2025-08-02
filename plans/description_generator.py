@@ -122,10 +122,8 @@ def generate_all_descriptions(session) -> dict:
         'results': []
     }
     
-    # Get all plans without descriptions
-    plans = session.query(Plan).filter(
-        (Plan.plan_description.is_(None)) | (Plan.plan_description == '')
-    ).all()
+    # Get all plans (regenerate all descriptions)
+    plans = session.query(Plan).all()
     
     results['total_plans'] = len(plans)
     
