@@ -4,6 +4,7 @@ from contextlib import contextmanager
 from sqlalchemy.orm import Session
 from plans.document_extractor import update_plan_document_text
 from plans.gpt_summary_generator import generate_summary_for_plan
+from plans.toc_generator import gpt_generate_toc_for_plan
 
 # Create Blueprint
 plans_bp = Blueprint('plans', __name__, 
@@ -280,6 +281,75 @@ def generate_all_plan_summaries():
             for plan in plans:
                 print(f"Generating summary for {plan.short_name}...")
                 success, message = generate_summary_for_plan(plan.id, session)
+                
+                if success:
+                    results['successful'] += 1
+                else:
+                    results['failed'] += 1
+                
+                results['results'].append({
+                    'plan_id': plan.id,
+                    'plan_name': plan.short_name,
+                    'success': success,
+                    'message': message
+                })
+                
+                # Commit after each successful generation to save progress
+                if success:
+                    session.commit()
+            
+            return jsonify(results), 200
+            
+        except Exception as e:
+            return jsonify({
+                'success': False,
+                'error': f'Unexpected error: {str(e)}'
+            }), 500
+
+@plans_bp.route('/api/generate-toc/<int:plan_id>', methods=['POST'])
+def generate_plan_toc(plan_id):
+    """Generate table of contents for a specific plan using GPT-4.1"""
+    with session_scope() as session:
+        try:
+            success, message = gpt_generate_toc_for_plan(plan_id, session)
+            
+            if success:
+                return jsonify({
+                    'success': True,
+                    'message': message
+                }), 200
+            else:
+                return jsonify({
+                    'success': False,
+                    'error': message
+                }), 400
+                
+        except Exception as e:
+            return jsonify({
+                'success': False,
+                'error': f'Unexpected error: {str(e)}'
+            }), 500
+
+@plans_bp.route('/api/generate-all-tocs', methods=['POST'])
+def generate_all_plan_tocs():
+    """Generate table of contents for all plans that have extracted document text"""
+    from plans.plans_model import Plan
+    
+    with session_scope() as session:
+        try:
+            # Get all plans with extracted document text
+            plans = session.query(Plan).filter(Plan.plan_document_full_text.isnot(None)).all()
+            
+            results = {
+                'total_plans': len(plans),
+                'successful': 0,
+                'failed': 0,
+                'results': []
+            }
+            
+            for plan in plans:
+                print(f"Generating table of contents for {plan.short_name}...")
+                success, message = generate_toc_for_plan(plan.id, session)
                 
                 if success:
                     results['successful'] += 1
