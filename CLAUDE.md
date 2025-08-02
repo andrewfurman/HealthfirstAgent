@@ -32,8 +32,10 @@ poetry run python main.py
 
 **When to restart the server**:
 - After modifying Python files (*.py)
-- After modifying Flask templates (*.html)
+- After modifying Flask templates (*.html)  
 - After changing static files that are cached
+- After updating plan detail page layout or structure
+- After any significant UI/UX changes to re-render templates
 - Claude will automatically restart the server when these changes are made
 
 **After starting/restarting the server**:

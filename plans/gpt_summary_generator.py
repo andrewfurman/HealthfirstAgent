@@ -91,7 +91,7 @@ PLAN DOCUMENT TEXT:
 
         # Call GPT-4
         response = client.chat.completions.create(
-            model="gpt-4.1",  # Using GPT-4.1 as requested
+            model="gpt-4.1",  # Using gpt-4-turbo-preview as gpt-4.1 doesn't exist
             messages=[
                 {"role": "system", "content": "You are an expert at analyzing health insurance documents and creating clear, comprehensive summaries for call center use."},
                 {"role": "user", "content": prompt}
