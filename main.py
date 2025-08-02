@@ -181,7 +181,7 @@ def get_session_token():
     payload = {
         "model": OPENAI_REALTIME_MODEL,
         "voice": "alloy",
-        # "modalities": ["audio", "text"], # Optional: Uncomment/adjust if needed
+        "modalities": ["audio", "text"], # Enable both audio and text output
 
         # --- Optional: Input Transcription settings ---
         # Verify the exact parameter name and structure from API docs if you need this.
