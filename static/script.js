@@ -67,17 +67,97 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log('Stream id:', stream.id);
                     console.log('Audio tracks in stream:', stream.getAudioTracks().length);
                     
+                    // Get the audio track and try to unmute it
+                    const audioTracks = stream.getAudioTracks();
+                    if (audioTracks.length > 0) {
+                        const audioTrack = audioTracks[0];
+                        console.log('Audio track before unmute attempt:', {
+                            enabled: audioTrack.enabled,
+                            muted: audioTrack.muted,
+                            readyState: audioTrack.readyState,
+                            label: audioTrack.label,
+                            id: audioTrack.id
+                        });
+                        
+                        // Force enable the track
+                        audioTrack.enabled = true;
+                        
+                        // Monitor track state changes
+                        audioTrack.addEventListener('mute', () => {
+                            console.warn('Audio track was muted!');
+                        });
+                        
+                        audioTrack.addEventListener('unmute', () => {
+                            console.log('Audio track was unmuted!');
+                        });
+                        
+                        audioTrack.addEventListener('ended', () => {
+                            console.warn('Audio track ended!');
+                        });
+                        
+                        // Set up periodic monitoring of track state
+                        const monitorInterval = setInterval(() => {
+                            if (!audioTrack || audioTrack.readyState === 'ended') {
+                                clearInterval(monitorInterval);
+                                return;
+                            }
+                            
+                            if (audioTrack.muted) {
+                                console.warn('Audio track is still muted, attempting to handle...');
+                                // Try to recreate the audio element connection
+                                remoteAudio.srcObject = null;
+                                remoteAudio.srcObject = stream;
+                                remoteAudio.play().catch(e => console.error('Play retry failed:', e));
+                            }
+                        }, 2000); // Check every 2 seconds
+                        
+                        // Store interval ID for cleanup
+                        if (window.audioMonitorInterval) {
+                            clearInterval(window.audioMonitorInterval);
+                        }
+                        window.audioMonitorInterval = monitorInterval;
+                    }
+                    
                     remoteAudio.srcObject = stream;
                     console.log('Assigned remote stream to audio element.');
                     console.log('Audio element paused:', remoteAudio.paused);
                     console.log('Audio element muted:', remoteAudio.muted);
                     console.log('Audio element volume:', remoteAudio.volume);
                     
+                    // Ensure audio element settings
+                    remoteAudio.muted = false;
+                    remoteAudio.volume = 1.0;
+                    
                     // Attempt to play audio programmatically after user interaction
                     remoteAudio.play()
                         .then(() => {
                             console.log('Audio playback started successfully');
                             console.log('Audio element paused after play:', remoteAudio.paused);
+                            
+                            // Additional check after play starts
+                            setTimeout(() => {
+                                const tracks = stream.getAudioTracks();
+                                if (tracks.length > 0) {
+                                    console.log('Audio track status after play:', {
+                                        muted: tracks[0].muted,
+                                        enabled: tracks[0].enabled,
+                                        readyState: tracks[0].readyState
+                                    });
+                                    
+                                    // Check if audio context is needed
+                                    if (tracks[0].muted && window.AudioContext) {
+                                        console.log('Track is muted, attempting AudioContext workaround...');
+                                        try {
+                                            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                                            const source = audioContext.createMediaStreamSource(stream);
+                                            source.connect(audioContext.destination);
+                                            console.log('AudioContext workaround applied');
+                                        } catch (err) {
+                                            console.error('AudioContext workaround failed:', err);
+                                        }
+                                    }
+                                }
+                            }, 1000);
                         })
                         .catch(e => console.error("Audio play failed:", e));
                 } else {
@@ -227,6 +307,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function stopChat() {
         console.log('Stopping chat...');
+        
+        // Clear audio monitoring interval if it exists
+        if (window.audioMonitorInterval) {
+            clearInterval(window.audioMonitorInterval);
+            window.audioMonitorInterval = null;
+            console.log('Cleared audio monitoring interval');
+        }
+        
         if (dc) {
             // dc.onclose will handle status update unless connection already closed
             dc.close();
