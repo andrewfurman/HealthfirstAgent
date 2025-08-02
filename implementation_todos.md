@@ -15,6 +15,17 @@
   - Consolidate function definitions and implementations in one place
   - Reduce boilerplate code for adding new functions
   - Create base class for function handlers
+- [ ] Improve function calling performance
+  - Optimize database queries to reduce wait time
+  - Implement caching for frequently accessed data
+  - Add connection pooling for database operations
+  - Profile and optimize slow function executions
+- [ ] Enhance function calling display in UI
+  - Show real-time function execution status
+  - Display loading spinner during function calls
+  - Show function parameters being passed
+  - Add execution time for each function call
+  - Display function results in formatted way
 - [ ] Add function to compare multiple health plans side-by-side
 - [ ] Implement function to check provider network status
 - [ ] Add function to calculate estimated out-of-pocket costs
