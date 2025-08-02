@@ -10,6 +10,11 @@
 - [ ] Add ability to download conversation transcript
 
 ### 2. Function Calling Improvements
+- [ ] Simplify function calling architecture
+  - Create a function registry/decorator pattern for easier function addition
+  - Consolidate function definitions and implementations in one place
+  - Reduce boilerplate code for adding new functions
+  - Create base class for function handlers
 - [ ] Add function to compare multiple health plans side-by-side
 - [ ] Implement function to check provider network status
 - [ ] Add function to calculate estimated out-of-pocket costs
