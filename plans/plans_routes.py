@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from plans.document_extractor import update_plan_document_text
 from plans.gpt_summary_generator import generate_summary_for_plan
 from plans.toc_generator import gpt_generate_toc_for_plan
+from plans.description_generator import generate_description_for_plan, generate_all_descriptions
 
 # Create Blueprint
 plans_bp = Blueprint('plans', __name__, 
@@ -367,6 +368,46 @@ def generate_all_plan_tocs():
                 if success:
                     session.commit()
             
+            return jsonify(results), 200
+            
+        except Exception as e:
+            return jsonify({
+                'success': False,
+                'error': f'Unexpected error: {str(e)}'
+            }), 500
+
+
+@plans_bp.route('/api/generate-description/<int:plan_id>', methods=['POST'])
+def generate_plan_description_api(plan_id):
+    """Generate a clear one-sentence description for a specific plan using GPT"""
+    with session_scope() as session:
+        try:
+            success, message = generate_description_for_plan(plan_id, session)
+            
+            if success:
+                return jsonify({
+                    'success': True,
+                    'description': message,
+                    'plan_id': plan_id
+                }), 200
+            else:
+                return jsonify({
+                    'success': False,
+                    'error': message
+                }), 400
+                
+        except Exception as e:
+            return jsonify({
+                'success': False,
+                'error': f'Unexpected error: {str(e)}'
+            }), 500
+
+@plans_bp.route('/api/generate-all-descriptions', methods=['POST'])
+def generate_all_plan_descriptions():
+    """Generate descriptions for all plans that don't have one"""
+    with session_scope() as session:
+        try:
+            results = generate_all_descriptions(session)
             return jsonify(results), 200
             
         except Exception as e:
