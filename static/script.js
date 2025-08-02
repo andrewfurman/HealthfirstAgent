@@ -11,7 +11,13 @@ document.addEventListener('DOMContentLoaded', function() {
     let dc; // RTCDataChannel
     let localStream; // User's microphone stream
 
-    startButton.addEventListener('click', startChat);
+    startButton.addEventListener('click', () => {
+        // Ensure audio can play on user interaction
+        if (remoteAudio && remoteAudio.paused) {
+            remoteAudio.play().catch(e => console.log("Audio play retry failed:", e));
+        }
+        startChat();
+    });
     stopButton.addEventListener('click', stopChat);
 
     async function startChat() {
@@ -55,12 +61,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 3. Set up to play remote audio from the model
             pc.ontrack = e => {
-                console.log('Remote track received:', e.track);
+                console.log('Remote track received:', e.track, 'Track kind:', e.track.kind);
                 if (e.streams && e.streams[0]) {
+                    console.log('Stream tracks:', e.streams[0].getTracks().map(t => ({kind: t.kind, enabled: t.enabled, muted: t.muted})));
                     remoteAudio.srcObject = e.streams[0];
                     console.log('Assigned remote stream to audio element.');
-                     // Attempt to play audio programmatically after user interaction
-                     remoteAudio.play().catch(e => console.error("Audio play failed:", e));
+                    // Force unmute and enable the audio element
+                    remoteAudio.muted = false;
+                    remoteAudio.volume = 1.0;
+                    // Attempt to play audio programmatically after user interaction
+                    remoteAudio.play()
+                        .then(() => console.log("Audio playback started successfully"))
+                        .catch(e => {
+                            console.error("Audio play failed:", e);
+                            // Try to resume audio context if blocked
+                            if (remoteAudio.paused) {
+                                console.log("Audio is paused, will retry on next user interaction");
+                            }
+                        });
                 } else {
                      console.warn("Received track event without streams.");
                      // Fallback for older browser compatibility if needed, but less common now
