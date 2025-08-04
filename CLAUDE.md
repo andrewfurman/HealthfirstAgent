@@ -27,7 +27,7 @@ poetry run python main.py
 1. Start the Flask server in the background using `nohup` to prevent interruption
 2. Keep the server running even when you press Esc or switch contexts
 3. If a server restart is needed (e.g., after modifying Python files), Claude will notify you in the chat before restarting
-4. The server runs on http://127.0.0.1:8080 by default
+4. The server runs on http://127.0.0.1:8080 by default locally (Azure uses PORT=8000 env variable)
 5. Server logs are saved to `flask_server.log`
 
 **When to restart the server**:
@@ -39,7 +39,7 @@ poetry run python main.py
 - Claude will automatically restart the server when these changes are made
 
 **After starting/restarting the server**:
-- Claude will immediately provide the localhost URL (http://127.0.0.1:8080) in the chat
+- Claude will immediately provide the localhost URL (http://127.0.0.1:8080 locally)
 - Claude will ask you to verify changes after updates
 - Claude will continue processing other tasks while the server runs in the background
 - Check logs with: `tail -f flask_server.log`
