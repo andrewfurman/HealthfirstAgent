@@ -97,8 +97,8 @@ git remote -v
 ```bash
 # Deploy all required environment variables at once
 az webapp config appsettings set --resource-group furman_resource_group --name healthfirstagent --settings \
-    DATABASE_URL="postgresql://neondb_owner:npg_Qucx6nvo0wHj@ep-orange-voice-a5tglure.us-east-2.aws.neon.tech/neondb?sslmode=require" \
-    OPENAI_API_KEY="your-openai-api-key-here" \
+    DATABASE_URL="postgresql://<username>:<password>@<host>/<database>?sslmode=require" \
+    OPENAI_API_KEY="<your-openai-api-key>" \
     PORT="8080" \
     FLASK_ENV="production" \
     WEBSITES_PORT="8000" \
@@ -184,8 +184,8 @@ az webapp restart --resource-group furman_resource_group --name healthfirstagent
 
 ### Critical Variables (Must be set)
 ```bash
-DATABASE_URL="postgresql://neondb_owner:npg_Qucx6nvo0wHj@ep-orange-voice-a5tglure.us-east-2.aws.neon.tech/neondb?sslmode=require"
-OPENAI_API_KEY="sk-proj-..." # Your OpenAI API key
+DATABASE_URL="postgresql://<username>:<password>@<host>/<database>?sslmode=require"
+OPENAI_API_KEY="<your-openai-api-key>" # Your OpenAI API key
 ```
 
 ### Azure Configuration Variables (Pre-configured)
