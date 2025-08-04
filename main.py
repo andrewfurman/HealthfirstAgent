@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import requests
 import json # Added for JSON loading in error handling
 from flask import Flask, render_template, jsonify, request
+from flask_socketio import SocketIO, emit
 from plans.plans_routes import plans_bp
 from realtime_functions import (
     get_plan_coverage_summary,
@@ -59,6 +60,8 @@ else:
 
 # --- Flask App Initialization ---
 app = Flask(__name__, static_url_path='/static')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-here')
+socketio = SocketIO(app, cors_allowed_origins="*")
 app.register_blueprint(plans_bp)
 
 # --- Helper Function to Read Instructions File ---
@@ -104,8 +107,20 @@ def execute_function():
         
         print(f"Executing function: {function_name} with arguments: {arguments}")
         
+        # Broadcast tool call start to frontend
+        socketio.emit('tool_call_start', {
+            'function_name': function_name,
+            'arguments': arguments,
+            'timestamp': json.dumps({"timestamp": "now"})  # Simple timestamp
+        })
+        
         if not Session:
-            return jsonify({"error": "Database not available"}), 500
+            error_result = {"error": "Database not available"}
+            socketio.emit('tool_call_error', {
+                'function_name': function_name,
+                'error': "Database not available"
+            })
+            return jsonify(error_result), 500
             
         db_session = Session()
         
@@ -131,6 +146,15 @@ def execute_function():
                 result = {"error": f"Unknown function: {function_name}"}
             
             print(f"Function result: {json.dumps(result)[:500]}...")  # Log first 500 chars
+            
+            # Broadcast tool call completion to frontend
+            result_preview = json.dumps(result)[:200] + "..." if len(json.dumps(result)) > 200 else json.dumps(result)
+            socketio.emit('tool_call_complete', {
+                'function_name': function_name,
+                'result_preview': result_preview,
+                'success': True
+            })
+            
             return jsonify(result)
             
         finally:
@@ -138,6 +162,13 @@ def execute_function():
             
     except Exception as e:
         print(f"Error executing function: {e}")
+        
+        # Broadcast tool call error to frontend
+        socketio.emit('tool_call_error', {
+            'function_name': function_name,
+            'error': str(e)
+        })
+        
         return jsonify({"error": str(e)}), 500
 
 @app.route('/session', methods=['GET'])
@@ -316,5 +347,5 @@ if __name__ == '__main__':
     # Debug mode should ideally be off in production
     # Read FLASK_DEBUG env var, default to 'false' if not set
     debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() in ('true', '1', 't')
-    print(f"Starting Flask app on host 0.0.0.0 port {port} with debug mode: {debug_mode}")
-    app.run(host='0.0.0.0', port=port, debug=debug_mode)
+    print(f"Starting Flask app with SocketIO on host 0.0.0.0 port {port} with debug mode: {debug_mode}")
+    socketio.run(app, host='0.0.0.0', port=port, debug=debug_mode, allow_unsafe_werkzeug=True)

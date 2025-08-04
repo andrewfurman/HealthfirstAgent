@@ -14,6 +14,67 @@ document.addEventListener('DOMContentLoaded', function() {
     startButton.addEventListener('click', startChat);
     stopButton.addEventListener('click', stopChat);
 
+    // Function to handle function calls from OpenAI Realtime API
+    async function handleFunctionCall(messageData) {
+        try {
+            console.log("Processing function call:", messageData);
+            
+            // Extract function name and arguments from the message
+            const functionName = messageData.name;
+            const argumentsString = messageData.arguments;
+            const callId = messageData.call_id;
+            
+            // Parse the arguments
+            let parsedArguments;
+            try {
+                parsedArguments = JSON.parse(argumentsString);
+            } catch (e) {
+                console.error("Failed to parse function arguments:", argumentsString);
+                return;
+            }
+            
+            console.log(`Calling function: ${functionName} with args:`, parsedArguments);
+            
+            // Send to our Flask endpoint
+            const response = await fetch('/execute-function', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: functionName,
+                    arguments: parsedArguments
+                })
+            });
+            
+            const result = await response.json();
+            console.log("Function call result:", result);
+            
+            // Send the result back to OpenAI via the data channel
+            if (dc && dc.readyState === 'open') {
+                const responseMessage = {
+                    type: "conversation.item.create",
+                    item: {
+                        type: "function_call_output",
+                        call_id: callId,
+                        output: JSON.stringify(result)
+                    }
+                };
+                
+                console.log("Sending function result back to OpenAI:", responseMessage);
+                dc.send(JSON.stringify(responseMessage));
+                
+                // Trigger a response generation
+                dc.send(JSON.stringify({
+                    type: "response.create"
+                }));
+            }
+            
+        } catch (error) {
+            console.error("Error handling function call:", error);
+        }
+    }
+
     async function startChat() {
         console.log('=== Starting Chat Session ===');
         console.log('1. Initial setup...');
@@ -207,14 +268,34 @@ document.addEventListener('DOMContentLoaded', function() {
             // === VVVVVVVVVVVV MODIFICATION START VVVVVVVVVVVV ===
             // =============================================================
             dc.onmessage = (event) => {
-                // Log the raw message for debugging
-                // console.log('Raw Data channel message received:', event.data);
+                // Log ALL raw messages for debugging tool calls
+                console.log('Raw Data channel message received:', event.data);
 
                 try {
                     const messageData = JSON.parse(event.data);
 
-                    // Log the parsed message type for easier debugging
-                    // console.log(`Parsed message type: ${messageData.type}`);
+                    // Log ALL parsed message types for debugging
+                    console.log(`Parsed message type: ${messageData.type}`, messageData);
+
+                    // Check for function calling related events
+                    if (messageData.type === "response.function_call_arguments.done") {
+                        console.log("🚀 FUNCTION CALL DETECTED:", messageData);
+                        // Emit to debug panel
+                        if (window.debugSocket) {
+                            window.debugSocket.emit('debug_message', {
+                                type: 'function_call_detected',
+                                data: messageData
+                            });
+                        }
+                        
+                        // Handle the function call by sending it to our Flask endpoint
+                        handleFunctionCall(messageData);
+                    }
+                    
+                    // Check for function call results
+                    if (messageData.type === "response.function_call_arguments.delta") {
+                        console.log("🔄 FUNCTION CALL ARGUMENTS DELTA:", messageData);
+                    }
 
                     // Check for the specific event that contains the final transcript for an utterance
                     // Based on OpenAI docs and your transcript_seen.md, 'response.audio_transcript.done' is key.
@@ -236,9 +317,14 @@ document.addEventListener('DOMContentLoaded', function() {
                      else if (messageData.type === "session.created") {
                          console.log("Session created event received:", messageData.session);
                      }
-                     // Add more 'else if' blocks here to handle other event types
-                     // (e.g., 'input_audio_buffer.speech_started', 'response.created', etc.)
-                     // if you need to react to them in the UI or logic.
+                     // Check for any other function-related events
+                     else if (messageData.type && messageData.type.includes("function")) {
+                         console.log("🔍 FUNCTION-RELATED EVENT:", messageData.type, messageData);
+                     }
+                     // Check for response events that might indicate tool usage
+                     else if (messageData.type && messageData.type.startsWith("response.")) {
+                         console.log("📤 RESPONSE EVENT:", messageData.type, messageData);
+                     }
 
                 } catch (e) {
                     console.error("Failed to parse data channel message or handle event:", e);

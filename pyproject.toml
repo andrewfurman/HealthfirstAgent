@@ -11,6 +11,11 @@ gunicorn = "^21.2.0"
 requests = "^2.32.3"
 sqlalchemy = "^2.0.40"
 psycopg2-binary = "^2.9.10"
+python-dotenv = "^1.1.1"
+beautifulsoup4 = "^4.13.4"
+pypdf2 = "^3.0.1"
+openai = "^1.98.0"
+flask-socketio = "^5.5.1"
 
 [tool.pyright]
 # https://github.com/microsoft/pyright/blob/main/docs/configuration.md
