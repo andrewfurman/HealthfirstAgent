@@ -89,6 +89,11 @@ def read_instructions_from_file():
 # <<< END MODIFICATION >>>
 
 # --- Routes ---
+@app.route('/health')
+def health_check():
+    """Health check endpoint for Azure."""
+    return jsonify({"status": "healthy", "service": "healthfirst-agent"}), 200
+
 @app.route('/')
 def index():
     """Serves the main HTML page."""
