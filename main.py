@@ -342,8 +342,9 @@ def get_session_token():
 if __name__ == '__main__':
     # Note: Use host='0.0.0.0' for accessibility within Docker/Replit,
     # but be mindful of security implications in production environments.
-    # Use environment variable for port if available, default to 8080 or 5000
-    port = int(os.environ.get('PORT', 8080)) # Using 8080 as a common alternative
+    # Use environment variable for port if available, default to 8080 locally
+    # Azure deployment will set PORT=8000 via environment variable
+    port = int(os.environ.get('PORT', 8080)) # Default 8080 locally, Azure sets PORT=8000
     # Debug mode should ideally be off in production
     # Read FLASK_DEBUG env var, default to 'false' if not set
     debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() in ('true', '1', 't')

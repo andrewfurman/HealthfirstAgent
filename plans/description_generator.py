@@ -62,7 +62,7 @@ Write only the one-sentence description, nothing else:"""
 
         # Call GPT
         response = client.chat.completions.create(
-            model="gpt-4o-mini",  # Using GPT-4o-mini for efficiency
+            model="gpt-4.1",  # Using GPT-4.1 as required for text-based queries
             messages=[
                 {"role": "system", "content": "You are an expert at writing clear, simple explanations of complex health insurance plans for the general public."},
                 {"role": "user", "content": prompt}

@@ -37,18 +37,29 @@ CRITICAL REQUIREMENTS:
 3. Extract page numbers from any table of contents already in the document
 4. If no explicit TOC exists, look for section headers with page breaks or "Page X of Y" markers
 
+**SPECIAL FOCUS - CALL CENTER REQUIREMENTS:**
+You must specifically identify and note pages that contain:
+- **COPAYS/COPAYMENTS** - Any pages with copay amounts, copay tables, or copayment information
+- **COINSURANCE** - Any pages with coinsurance percentages or coinsurance details
+- **DEDUCTIBLES** - Any pages with deductible amounts or deductible information
+- **PRIOR AUTHORIZATION** - Any pages listing services requiring prior authorization or PA requirements
+
+When you find these topics, add a note like: "(contains copay info)" or "(contains PA requirements)" after the section title.
+
 The table of contents should:
 1. Use simple markdown lists and headers without ANY dots, periods, or dashes as separators
 2. Put page numbers (if present) right after the section name with just a space
 3. Show all major sections and important subsections
 4. Maintain the exact structure as it appears in the document
 5. Keep section titles concise - use abbreviations where appropriate
+6. **HIGHLIGHT pages with copay, coinsurance, deductible, and prior authorization information**
 
 Format Rules:
 - NO dots (.........) between titles and page numbers
 - Just use a space and the page number: "Section Name 42"
 - Use markdown headers (##, ###) for main sections
 - Use bullet points (-) for subsections
+- Add special notes for key information: "Section Name 42 (contains copay tables)"
 - Keep it clean and minimal
 
 Example format:
@@ -59,17 +70,19 @@ Example format:
 
 ### B. Frequently asked questions 3
 
-### C. Overview of services 9
+### C. Overview of services 9 (contains copay info)
 
 ### D. Additional services CompleteCare covers 31
 
-### E. Benefits covered outside of CompleteCare 32
+### E. Benefits covered outside of CompleteCare 32 (contains coinsurance rates)
 
-### F. Services not covered 33
+### F. Services not covered 33 (contains prior authorization requirements)
 
 ### G. Your rights and responsibilities 34
 
 ### H. How to file a complaint 37
+
+### I. Cost-sharing summary 45 (contains deductible and copay tables)
 
 IMPORTANT: 
 - Extract the ACTUAL sections from the document
@@ -77,20 +90,22 @@ IMPORTANT:
 - Keep section names short and clear
 - LOOK CAREFULLY for page numbers - they are often present in the original TOC or as "Page X" markers
 - If you see patterns like "Section Name.....14" or "Section Name — 14", extract the page number as 14
+- **SCAN THE ENTIRE DOCUMENT** for any mention of copays, coinsurance, deductibles, or prior authorization and note which pages contain this information
+- Call center agents frequently need to reference these specific pages, so accuracy is critical
 
 PLAN DOCUMENT TEXT:
-{document_text[:40000]}  # Limit to first 40k characters for context
+{document_text[:60000]}  # Increased limit to 60k characters for better coverage of cost-sharing sections
 """
 
-        # Call GPT-4.1
+        # Call GPT-4.1 with enhanced instructions
         response = client.chat.completions.create(
-            model="gpt-4.1",  # Using GPT-4.1 as requested
+            model="gpt-4.1",  # Using GPT-4.1 as required for text-based queries
             messages=[
-                {"role": "system", "content": "You are an expert at analyzing document structure and creating detailed tables of contents. Extract the exact structure as it appears in the document."},
+                {"role": "system", "content": "You are an expert at analyzing health insurance plan documents and creating detailed tables of contents. You specialize in identifying and highlighting pages that contain copay information, coinsurance rates, deductible amounts, and prior authorization requirements for call center agents. Extract the exact structure as it appears in the document and pay special attention to cost-sharing and authorization sections."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.1,  # Very low temperature for accuracy
-            max_tokens=2000  # Enough for a detailed TOC
+            max_tokens=3000  # More tokens for detailed TOC with annotations
         )
         
         toc = response.choices[0].message.content
